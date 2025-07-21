@@ -10,7 +10,7 @@ st.sidebar.header("📁 Charger un fichier DVF")
 uploaded_file = st.sidebar.file_uploader("Choisissez un fichier CSV", type=["csv"])
 
 if uploaded_file:
-    df = pd.read_csv(uploaded_file, sep=",")
+    df = pd.read_csv(uploaded_file, sep=";", encoding="utf-8")
     st.success("Fichier chargé avec succès.")
     
     # Filtrage simple
