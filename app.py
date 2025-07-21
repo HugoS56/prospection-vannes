@@ -14,7 +14,7 @@ if uploaded_file:
     st.success("Fichier chargé avec succès.")
     
     # Filtrage simple
-    villes = df["commune"].dropna().unique()
+    st.write("Colonnes disponibles :", df.columns.tolist())
     ville = st.selectbox("Sélectionnez une commune", sorted(villes))
     
     filtered_df = df[df["commune"] == ville]
