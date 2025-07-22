@@ -15,8 +15,8 @@ if uploaded_file:
     
     # Filtrage simple
     codes_insee = df["l_codinsee"].dropna().unique()
-ville = st.selectbox("Sélectionnez un code INSEE", sorted(codes_insee))
-filtered_df = df[df["l_codinsee"] == ville]
+    ville = st.selectbox("Sélectionnez un code INSEE", sorted(codes_insee))
+    filtered_df = df[df["l_codinsee"] == ville]
     ville = st.selectbox("Sélectionnez une commune", sorted(villes))
     
     filtered_df = df[df["commune"] == ville]
