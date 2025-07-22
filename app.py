@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import ast
 
 st.set_page_config(page_title="Prospection Vannes", layout="wide")
 
@@ -13,11 +14,15 @@ if uploaded_file:
     df = pd.read_csv(uploaded_file, sep=";", encoding="utf-8")
     st.success("Fichier chargé avec succès.")
 
-    # Afficher les colonnes pour debug
-    st.write("### Colonnes disponibles dans le fichier :")
-    st.write(list(df.columns))
+    # Nettoyage de la colonne l_codinsee (si elle contient des listes en string)
+    if df["l_codinsee"].dtype == object and df["l_codinsee"].str.startswith("[").any():
+        try:
+            df["l_codinsee"] = df["l_codinsee"].apply(ast.literal_eval)
+            df = df.explode("l_codinsee")
+        except Exception as e:
+            st.error(f"Erreur lors du traitement de 'l_codinsee' : {e}")
 
-    # Filtrage simple par code INSEE
+    # Filtrage par code INSEE
     if "l_codinsee" in df.columns:
         codes_insee = df["l_codinsee"].dropna().unique()
         ville = st.selectbox("Sélectionnez un code INSEE", sorted(codes_insee))
@@ -26,13 +31,13 @@ if uploaded_file:
         st.write(f"🔍 **Nombre de biens trouvés pour la commune {ville} :** {len(filtered_df)}")
         st.dataframe(filtered_df)
 
-        # Statistiques simples
+        # Statistiques
         if "valeurfonc" in df.columns:
             st.markdown("💰 **Statistiques sur les valeurs foncières**")
             st.write(filtered_df["valeurfonc"].describe())
         else:
-            st.warning("La colonne 'valeurfonc' n'a pas été trouvée dans le fichier.")
+            st.warning("La colonne 'valeurfonc' n'existe pas dans ce fichier.")
     else:
-        st.error("La colonne 'l_codinsee' est manquante dans le fichier.")
+        st.error("Colonne 'l_codinsee' manquante.")
 else:
     st.info("Veuillez importer un fichier DVF (.csv) pour commencer.")
